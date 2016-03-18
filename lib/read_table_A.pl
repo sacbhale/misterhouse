@@ -63,7 +63,13 @@ sub read_table_A {
         $other = join ', ', ( map { "'$_'" } @other );          # Quote data
         $object = "ZWave_Appliance_Item('$address', $other)";
     }
-
+    # -[ CAI ]----------------------------------------------------------
+    elsif($type eq "CAI_ITEM") {
+        require 'CAI_Item.pm';
+        ($name, @other) = @item_info;
+        $other = join ', ', (map {"'$_'"} @other); # Quote data
+        $object = "CAI_Item('$name',$other)";
+    }
     # -[ UPB ]----------------------------------------------------------
     elsif ( $type eq "UPBPIM" ) {
         require 'UPBPIM.pm';
