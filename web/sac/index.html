@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
+<script>
+
+function httpGet(theUrl)
+{
+    var xmlHttp = null;
+
+    xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "GET", theUrl, false );
+    xmlHttp.send( null );
+    return xmlHttp.responseText;
+}
+
+function isSlider(id,value)
+{
+if( id == "$LivingLt" || id == "$DiningLt" || /[0-9]+%/g.test(value) ){
+  return 1;
+} 
+return 0;
+}
+
+function lightOperate(id,value)
+{
+if( value == "on" || /[0-9]+%/g.test(value) ) {
+ value = "off";
+} else if(id == "$FamroomLt" ){
+value = "50%";
+} else if(id == "$DiningLt" ){
+value = "50%";
+} else {
+value = "on";
+}
+var url = "http://pi.sacbhale.net:8080/bin/SET;ok?" + id + "=" + value ;
+//window.alert( "isslider=" + isSlider(id,value));
+httpGet(url);
+}
+
+function createSliders()
+{
+$( "#$LivingLt" ).slider({
+value:1,
+min:0,
+max:100,
+step:10});
+$( "#$DiningLt" ).slider();
+}
+
+
+function loadXMLDoc(url)
+{
+var lookupTable = {
+  "$HolidayLt": function() {
+    return "Humidifier";
+  },
+  "$LivingLt": function() {
+    return "Living Room";
+  },
+  "$DiningLt": function() {
+    return "Dining Room";
+  },
+  "$Hallway3": function() {
+    return "Hallway";
+  },
+  "$MasBathLt": function() {
+    return "Master Bedroom";
+  },
+  "$BathLt": function() {
+    return "Common Bath";
+  },
+  "$Bed1Lt": function() {
+    return "Mumma's Room";
+  },
+  "$Bed2Lt": function() {
+    return "Neil's Room";
+  },
+  "$KitchenLt": function() {
+    return "Kitchen";
+  },
+  "$PorchLt": function() {
+    return "Porch";
+  },
+  "$EntrywayLt": function() {
+    return "Entry Way";
+  },
+  "$OfficeLt": function() {
+    return "Office";
+  },
+  "$GarageLt": function() {
+    return "Garage";
+  },
+  "$FamroomLt":  function() {
+    return "Family Room";
+  }
+};
+
+if(typeof url === 'undefined'){
+  url='/sub?xml%28groups=$remote,fields=state%29';
+ };
+var xmlhttp;
+var txt,x,xx,xx,i,id,value;
+if (window.XMLHttpRequest)
+  {// code for IE7+, Firefox, Chrome, Opera, Safari
+  xmlhttp=new XMLHttpRequest();
+  }
+else
+  {// code for IE6, IE5
+  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  }
+xmlhttp.onreadystatechange=function()
+  {
+  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+    {
+    txt="<table border='1' width='90%'><tr><th>Name</th><th>State</th></tr>";
+    x=xmlhttp.responseXML.documentElement.getElementsByTagName("object");
+    for (i=0;i<x.length;i++)
+      {
+      txt=txt + "<tr>";
+      xx=x[i].getElementsByTagName("name");
+        {
+        try
+          {
+	  id=xx[0].firstChild.nodeValue;
+          txt=txt + "<td>" + lookupTable[id]() + "</td>";
+          }
+        catch (er)
+          {
+          txt=txt + "<td> </td>";
+          }
+        }
+      xx=x[i].getElementsByTagName("state");
+        {
+        try
+          {
+	  value=xx[0].firstChild.nodeValue;
+//	  if ( isSlider(id,value) == 0)
+//	    {
+              txt=txt +"<td><button onclick=lightOperate('" + id + "','"+ value +"')>" + value + "</button></td>";
+//	    } else {
+//	     txt=txt + "<td><div id=\""+ id +"\"></td>"
+//	    }
+          }
+        catch (er)
+          {
+          txt=txt + "<td> </td>";
+          }
+        }
+      txt=txt + "</tr>";
+      }
+    txt=txt + "</table>";
+    if ( txt != document.getElementById('txtLights').innerHTML )
+    document.getElementById('txtLights').innerHTML=txt;
+    createSliders();
+    }
+  }
+xmlhttp.open("GET",url,true);
+xmlhttp.send();
+}
+setInterval(loadXMLDoc,1500);
+</script>
+</head>
+<body>
+
+<div id="txtLights">
+Loading...
+</div>
+
+</body>
+</html>

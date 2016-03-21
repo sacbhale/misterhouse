@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            type: "GET",
+            url: "/sub?xml%28groups=$remote,fields=state%29",
+            cache: false,
+	    data : data,
+            dataType: "xml",
+	    success:
+   	      function(msg){
+            alert(data);
+   	    },
+  	    error:
+	      function(XMLHttpRequest, textStatus, errorThrown){
+	     alert(errorThrown);
+      	     //execute code related to failier of web service
+            }
+        });
+    });
+</script>
+</head>
+<body>
+<h1>Lights remote Control</h1>
+
+<p>testing testing testing</p>
+</body>
+</html>
+
